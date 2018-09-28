@@ -1,0 +1,165 @@
+1.	连接服务器
+	ssh root@10.27.117.17   
+2.	查看在用端口状态
+	ss -tlnp
+3.	导出数据库
+	mysqldump -uroot -p]8N+,OW*oEIFLuGK -B 数据库名 >文件名.sql;
+4.	导入数据库
+	source 文件名.sql
+5.	打开Linux网卡驱动  
+	ifup eth0
+6.	可以找到包含某内容的文件(-i忽略大小写，-v排除指定字符串)
+	grep -i "nm" *txt /  
+7.	创建目录
+	mkdir -p 目录名
+8.	查看某文件/目录大小
+	du -sh 文件/目录
+9.	查看文件夹下所有文件的大小
+	du -sh *
+10.	让目录锁定不可操作(包括root权限都无法操作)
+	chattr +i 某个目录    （-i是去除这个属性）
+11.	允许某个特定ip访问所有数据库：
+	GRANT ALL PRIVILEGES ON *.* TO '账号'@'ip名' IDENTIFIED BY '密码' WITH GRANT OPTION;
+12.	允许某个ip指定访问某个数据库
+	GRANT ALL PRIVILEGES ON 数据库名.* TO '账号'@'ip名' IDENTIFIED BY '密码' WITH GRANT OPTION;
+13.	清除数据库权限缓存
+	flush privileges;
+14.	查看系统磁盘文件大小
+	df -h
+15.	打包某目录下所有的文件
+	zip -qr	文件名.zip *	
+16.	打包成某目录并排除某个目录
+	zip -qr 文件名.zip  -x 目录/*
+17.	解压某个zip文件到某个目录
+	unzip  -q  文件名.zip -d 文件名
+18.	计算文件内的单词数或者行数
+	单词数：wc -w 	行数：wc -l
+19.	重启lnmp集成环境
+	lnmp restart
+20.	系统重启
+	reboot
+21.	rm -rf 目录名/文件(r:目录f:强制)
+	删除目录: 
+22.	复制文件
+	cp -rf 源文件 目标文件
+23.	剪切文件
+	mv 源文件 目标文件(源文件和目标文件处于同级则为更改源文件名称)
+24.	创建软链接
+	ln -s 源文件 目标软链接文件
+25.	创建文件
+	tough 文件名
+26.	搜索文件(通过/var/lib下的数据库)
+	locate 文件名	如果命令无法使用则先安装yum -y install mlocate	
+27.	更新数据库
+	updatedb	locate报can not stat则执行该命令一下
+28.	查询命令所在位置
+	whereis 命令
+29.	按照文件名进行搜索
+	find 范围 -name 文件名
+30.	按照通配符搜索
+	find 范围 -name 通配符
+31.	不区分大小写搜索
+	find 范围 -iname 文件名
+32.	搜索没有所有者文件
+	find 范围 -nouser
+33.	查找修改文件
+	find 范围 -mtime 时间(时间为+10表示十天前修改的文件-10表示10天内修改的文件)
+34.	按照文件大小查找
+	find 范围 -size 大小(+25K)
+35.	按照文件节点查找
+	find 范围 -inum 节点大小		（使用ll -i可以查看文件节点）
+36.	按照所属组查找
+	find 范围 -group root
+37.	按照所属用户查找
+	find 范围 -user root
+38.	按照文件大小范围查找
+	find 范围 -size 大小 -a -size 大小(find 范围 -size 大小 -o size 大小)，其中-a表示同时满足-o表示满足其中一个。
+39.	find后加参数-exec表示外加指令
+	find 范围 -size +1k -size -1G -exec du -sh * {} \;
+	解析：{} 表示前面搜索出来的内容    命令结尾必须加一个分号结尾  \符号表示把分号和前面的指令区分开来；
+40.	使用帮助文档命令
+	man 命令  (命令 --help)(help 内部命令) 
+41. 查看内存使用情况
+	free -m
+42.	实时监测命令(-d表示变化位置高亮，-n表示经过几秒内容更新体现)
+	watch -d -n 1 ls -lh
+43.	查看linux位数
+	getconf LONG_BIT
+	uname -a
+44. 查看上次执行命令并执行
+	sudo !!（尽量别用，了解一下）
+45. 浏览器直接打开网页查看服务器内容 端口不写默认8000
+	python -m SimpleHTTPServer 端口
+46. traceroute和ping的结合    mtr
+	mtr 域名
+47.	已行号的方式来显示文件内容
+	nl 文件
+48. 从文件列表中随机选择文件列出来   1代表列出个数
+	ls | shuf -n1
+49. 显示用户登录的记录
+	last
+50. 得到自己服务器外部ip
+	curl ifconfig.me
+51. 查看开机自动启动
+	ntsysv
+52. crontab的一些使用案例
+
+	30 21 * * * /etc/init.d/nginx restart
+	每晚的21:30重启nginx。
+
+	45 4 1,10,22 * * /etc/init.d/nginx restart
+	每月1、10、22日的4 : 45重启nginx。
+
+	10 1 * * 6,0 /etc/init.d/nginx restart
+	每周六、周日的1 : 10重启nginx。
+
+	0,30 18-23 * * * /etc/init.d/nginx restart
+	每天18 : 00至23 : 00之间每隔30分钟重启nginx。
+
+	0 23 * * 6 /etc/init.d/nginx restart
+	每星期六的11 : 00 pm重启nginx。
+
+	* */1 * * * /etc/init.d/nginx restart
+	每一小时重启nginx
+
+	* 23-7/1 * * * /etc/init.d/nginx restart
+	晚上11点到早上7点之间，每 隔一小时重启nginx
+
+	0 11 4 * mon-wed /etc/init.d/nginx restart
+	每月的4号与每周一到周三 的11点重启nginx
+
+	0 4 1 jan * /etc/init.d/nginx restart
+	一月一号的4点重启nginx
+
+	*/30 * * * * /usr/sbin/ntpdate 210.72.145.20
+	每半小时同步一下时间
+
+53. 删除所有要删的文件并排除指定的一个文件或多个文件
+	rm -f `ls *.txt|egrep -v 1.txt`
+	rm -f `ls *.txt|egrep -v '(1.txt|3.txt)'`
+	rm -f `find . -name *.txt |egrep -v '(test.txt|fff.txt|ppp.txt)'`
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
