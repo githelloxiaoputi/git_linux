@@ -1,0 +1,10 @@
+1.	官网：http://nginx.org/
+2.	下载安装包：wget http://nginx.org/download/nginx-1.14.0.tar.gz
+3.	解压并进入目录：tar zxvf nginx-1.14.0.tar.gz		cd nginx-1.14.0
+4.	依赖库：nginx依赖prce库（其实就是正则） 安装依赖：yum -y install pcre pcre-devel 	
+5.	编译nginx到/usr/local/nginx文件夹中：./configure --prefix=/usr/local/nginx
+6.	编译成功之后安装：make && make install
+7.	进入nginx目录：cd /usr/local/nginx    底下包含：conf html sbin log ==》 配置文件，网站文件，进程文件，日志文件 
+8.	查看PID进程数：ps aux|grep nginx    或者    more log/nginx.pid
+9.	修改配置文件并重新启动：kill -HUP PID
+10.	重读日志，在日志按月/日分割时有用：kill -USR1 PID
