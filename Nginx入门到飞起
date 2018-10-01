@@ -1,4 +1,4 @@
-1.	官网：http://nginx.org/
+1.	官网：http://nginx.org/		nginx帮助文档：http://nginx.org/en/docs/   
 2.	下载安装包：wget http://nginx.org/download/nginx-1.14.0.tar.gz
 3.	解压并进入目录：tar zxvf nginx-1.14.0.tar.gz		cd nginx-1.14.0
 4.	依赖库：nginx依赖prce库（其实就是正则） 安装依赖：yum -y install pcre pcre-devel 	
@@ -32,3 +32,80 @@
 	location / 表示匹配浏览器域名后面紧跟着的“/”,匹配到了,则应用里面的配置文件
 	location / 和 location /foo		匹配 location /foo 匹配越全所以被选择
 	location / 和 location ~ image	匹配 location ~ image 正则优先匹配
+12.	nginx里面的变量(所有变量文件位于：nginx目录下的conf目录下的fastcgi.conf文件中)：
+	$remote_addr 	远程访问的ip
+	$http_user_agent	访问头文件
+	$document_root	项目目录也就是root后面指定的目录
+	$fastcgi_script_name  项目文件
+13.	rewrite重写	重写模式可以再server里面写也可以在location里面写
+	下列描述中的条件有以下几种写法
+		1.	“=”来判断相等，用于字符串比较
+		2.	“~“用正则来匹配（此处的正则区分大小写）
+			”~*“用正则匹配（此处的正则不区分大小写）
+		3.	”-f-d-e“来判断是否为文件，是否为目录，文件是否存在
+	if语句格式		if (条件) { 重写模式 }
+		1.浏览器输入ip是127.0.0.1的返回403不让访问
+			if ($remote_addr = '127.0.0.1') { return 403;}	
+		2.只要使用IE浏览器打开任何页面都返回ie.htm，记住使用break，否则页面将进入死循环，也就是不断重写
+			if ($http_user_agent ~ MSIE) { rewrite ^.*$ /ie.htm break; }
+		3.判断文件是否存在，不存在则重写到404页面
+			if (!-e $document_root$fastcgi_script_name) { rewrite ^.*$ /404.html break;}
+		4.使用set来设置变量
+			set $site = 1;
+			if ($site 1) { rewrite ^.*$ /404.html;}
+14.	提一句：安装mysql		
+	yum install -y mysql-devel mysqld	#客户端
+	yum install -y mysql-server		#服务端
+15.	提一句：删除已经编译过的内容
+	进入编译目录	make clean
+16.	提一句：Apache编译的php是不能给nginx使用
+17.	提一句：安装gd库(要想使用必须把这个库编译进php中去)
+	yum -y install gd
+18.	提一句：查看某个软件编译时需要的库		
+	进入对应编译目录使用：./configure -help|grep 库名	如：./configure -help|grep mysql
+19.	提一句：如果提示某某.h文件没有找到，则必须安装该文件的头文件包也就是加上 -devel
+	如：yum -y install gd-devel
+20.	提一句：nginx php apache工作原理与转发：
+	php是Apache的一个模块，而nginx则没有php模块，所以Apache编译的php是不能被nginx所使用的nginx是通过
+	和php以get的形式进行传递参数的方式将浏览器的变量参数传递给nginx。php一直是以9000端口独立运行着。当nginx
+	遇到浏览器发来的一系列变量的时候（理解成php文件），nginx无法自行操作这些数据，所以nginx要对这些数据做转发
+	给php进程来处理。代码实现
+	location ~ \.php$ {
+		root html;	#告诉php要去找的所在哪个目录下的php文件
+		fastcgi_pass 127.0.0.1:9000;		#转发给php，让php来处理这些内容
+		fastcgi_index index.php;	#指定默认索引页面
+		fastcgi_param SCRIPT_FILEME $document_root$fastcgi_script_name;	#发送给php指定文件的参数
+		include fastcgi_params;	#其他固有参数也携带
+	}
+21.	提一句：编译php一般需要写上这些库：
+	./configure --prefix=/usr/local/php --with-mysql-mysqlnd --enable-mysqlnd --with-gd --enable-gb-native-ttf --enable-gd-jis-conv --enable-fpm
+	其中--enable-fpm是必须的，才会出现有php运行的一个文件php-fpm这个文件在/usr/local/php/sbin目录下
+22.	提一句：php编译完之后需要的操作
+	1.把编译成功后的目录里面的php.ini.development拷贝一份到php指定目录下面的lib目录中
+		cp /usr/local/src/php-5.4.19/php.ini.development /usr/local/php/lib/php.ini
+	2.进入编译后的目录拷贝php产生的一个配置文件成另一个文件名字（都在同级目录）
+		cp /usr/local/php/etc/php-fpm.conf-default /usr/local/php/etc/php-fpm.conf
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
