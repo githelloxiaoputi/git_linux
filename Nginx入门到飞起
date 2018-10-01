@@ -8,3 +8,27 @@
 8.	查看PID进程数：ps aux|grep nginx    或者    more log/nginx.pid
 9.	修改配置文件并重新启动：kill -HUP PID
 10.	重读日志，在日志按月/日分割时有用：kill -USR1 PID
+11.	虚拟主机配置：
+	server{
+		listen 80;						#端口设置
+		server_name aa.com;				#域名设置
+
+		location / {
+			root /var/www/html;			#项目目录
+			index index.html index.php;	#项目索引文件以及顺序
+		}
+
+		access_log logs/xiaoputi.log;	#访问域名成功日志文件
+	}
+12.	location匹配说明	格式：location [=|~|~*|^~] patt {...}
+	判断流程：先判断是否有精准匹配，如果有精准匹配则直接选中对应的匹配结果，如果没有精准匹配则找普通匹配，
+			如果有多个匹配到了，则找匹配最长的那个并记录下来，最后再找正则匹配，一旦匹配到一个则使用正则
+			的匹配结果
+	= 	表示精准匹配
+	~ 	表示正则匹配(区分大小写)		
+	~*	表示正则匹配(不区分大小写)
+	^~	表示模式匹配也是正则	
+	不写表示字符串匹配
+	location / 表示匹配浏览器域名后面紧跟着的“/”,匹配到了,则应用里面的配置文件
+	location / 和 location /foo		匹配 location /foo 匹配越全所以被选择
+	location / 和 location ~ image	匹配 location ~ image 正则优先匹配

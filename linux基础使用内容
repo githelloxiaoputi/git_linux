@@ -138,6 +138,10 @@
 	rm -f `ls *.txt|egrep -v 1.txt`
 	rm -f `ls *.txt|egrep -v '(1.txt|3.txt)'`
 	rm -f `find . -name *.txt |egrep -v '(test.txt|fff.txt|ppp.txt)'`
+54. 查看ip
+	ifconfig 和 ip addr一样
+55. 服务器时间查看
+	date	沉默格式		查看格式：date +%Y-%m-%d    查看帮助文档：date --help
 
 
 
