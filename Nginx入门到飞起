@@ -23,7 +23,7 @@
 12.	location匹配说明	格式：location [=|~|~*|^~] patt {...}
 	判断流程：先判断是否有精准匹配，如果有精准匹配则直接选中对应的匹配结果，如果没有精准匹配则找普通匹配，
 			如果有多个匹配到了，则找匹配最长的那个并记录下来，最后再找正则匹配，一旦匹配到一个则使用正则
-			的匹配结果
+			的匹配结果就跳出
 	= 	表示精准匹配
 	~ 	表示正则匹配(区分大小写)		
 	~*	表示正则匹配(不区分大小写)
@@ -52,7 +52,12 @@
 			if (!-e $document_root$fastcgi_script_name) { rewrite ^.*$ /404.html break;}
 		4.使用set来设置变量
 			set $site = 1;
-			if ($site 1) { rewrite ^.*$ /404.html;}
+			if ($site = 1) { rewrite ^.*$ /404.html;}
+
+	1. 在重写规则的时候，如果正则有遇到{}的时候，需要使用""包起来，并且，正则里面括号数量里面的内容可以使用$1,$2,$3....代表 例如：
+		location /ecshop {
+			rewrite "goods-(\d{1-7})\.html" /ecshop/good.html?id=$1;
+		}
 14.	提一句：安装mysql		
 	yum install -y mysql-devel mysqld	#客户端
 	yum install -y mysql-server		#服务端
@@ -85,6 +90,83 @@
 		cp /usr/local/src/php-5.4.19/php.ini.development /usr/local/php/lib/php.ini
 	2.进入编译后的目录拷贝php产生的一个配置文件成另一个文件名字（都在同级目录）
 		cp /usr/local/php/etc/php-fpm.conf-default /usr/local/php/etc/php-fpm.conf
+23. 提一句：当我们使用localhost为主机名连接数据库的时候，linux服务器默认会使用mysql的socket来连接数据库，而我们
+	使用127.0.0.1或者其他ip来连接数据库的时候默认是走tcp协议来连接数据库，所以，当使用localhost来连接数据库失败
+	时候，可以修改php.ini中mysql_default_socket的值为数据库socket的路径，例如：
+	mysql_default_socket = /var/lib/mysql.sock
+24.	gzip压缩（针对整个网站起效果，就放到server中）
+	原理：浏览器开始请求并声明可以接受gzip或deflate或compress或sdch压缩，从http协议的角度看，请求头声明accept-encoding:gzip deflate sdch(是指压缩算法，其中sdch压缩方法是谷歌自由的一种压缩算法),服务器回应把内容用gzip方式进行压缩返还给浏览器，浏览器接收gzip压缩文件并进行解码显示内容
+	常用参数：
+	1.	gzip on|off;	#是否开启gzip
+	2.	gzip_buffers 32 4K|16 8K;	#缓冲（压缩在内存中缓存几块？每块多大?，如：32快 4k或者16块8k）
+	3.	gzip_comp_level [1-9];	#推荐6 压缩级别（级别越高，压缩越小，越浪费CPU计算资源）
+	4.	gzip_disable	#正则匹配UA 什么的Uri不进行gzip
+	5.	gzip_min_lenth 200;	#开始压缩的最小长度（再小就不要压缩了，没有意义）
+	6.	gzip_http_version 1.0|1.1	#开始压缩的http协议版本，可以不设置，目前几乎全是1.1协议
+	7.	gzip_proxied	#设置请求者代理服务器，该如何缓存内容
+	8.	gzip_types text/plain	#application/xml 对哪些类型的文件用压缩 如txt,xml,html,css  格式参考路径/usr/local/nginx/conf/mime.types文件
+	9.	gzip_vary on|off	#是否传输gzip压缩标志
+	例如：
+	gzip on;
+	gzip_buffers 32 4K;
+	gzip_comp_level 6;
+	gzip_min_lenth 4000;
+	gzip_types text/css application/x-javascript;
+	注意：图片/mp3这样的二进制文件，不变压缩，因为压缩比较小，比如100->80字节，而且压缩也是耗费CPU资源的
+25.	expires缓存提升网站负载
+	expires写法比较简单，可在location或if中写
+	格式：缓存时间是根据服务器时间来做参考的，另：服务器304也是一种很好的缓存手段。
+	expires 5s #5秒过期
+	expires 5m #5分钟过期
+	expires 5h #5小时过期
+	expires 5d #5天过期
+26.	nginx和Apache之间的反向代理(俗称动静分离)
+	说明：nginx更适合处理html文件，而Apache更适合处理php文件，当浏览器发来文件请求的时候，服务端自动判断是php文件还是html文件，如果是php文件，nginx收到后
+		 进行一个转发，转发到Apache，然后让Apache来处理这个文件，并最后转发给浏览器，这个过程就是一个反向代理proxy_pass
+	用法：把Apache中的默认端口改为8080，并配置好虚拟主机，在nginx中写好：
+		 location ~ \.php$ {
+		 	proxy_pass http://ip:8080即可	ip使用127.0.0.1可能也行
+		 }
+27. nginx实现负载均衡，减少服务器负载
+	1.设置多个后台端口虚拟主机：以图片用其他主机处理为例子，正常访问网站端口为80，后台图片处理虚拟主机分别为81，82
+		负载均衡设置（imgserver为组名字，后面proxy_pass里需要用到）:
+		upstream imgserver {
+			#weight表示权重	max_fails表示超时请求次数	fail_timeout表示超时请求时间
+			server ip:81 weight=1 max_fails=2 fail_timeout=3;
+			server ip:82 weight=1 max_fails=2 fail_timeout=3;
+		}
+		80端口虚拟主机设置，server下：
+		location ~* \.(jpg|png|jpeg)$ {
+			proxy_set_header X-Forwarded-For $remote_addr;	#把客户端的ip带到图片端虚拟主机中，这样在图片日志中可以显示客户端ip而不是服务端ip
+			proxy_pass http://imgserver;	#遇到图片的情况下将图片发向81或82端口虚拟主机处理
+		}
+		#81端口
+		server {
+			listen 81;
+			server_name localhost;
+			root html;
+			access_log logs/81-access.log main;		#更新后的日志格式有些不需要再写main了
+		}
+		#82端口
+		server {
+			listen 82;
+			server_name localhost;
+			root html;
+			access_log logs/82-access.log main;		#更新后的日志格式有些不需要再写main了
+		}
+28.	提一句：为php编译一个新扩展
+	1.进入php目录下的bin目录中并执行phpize文件
+	2.在下载下来的扩展进行解压并进入执行./configure --with-php-config=php目录中的bin/php-config
+	3.执行make && make install	会获得一个扩展路径
+	4.在php.ini中添加上这个.so扩展	extension = 扩展路径
+	5.重启php就可以了
+29.	nginx实现memcache的缓存机制
+	1.下载memcache的包扩展并编译进php中使php支持memcache的使用
+	2.在nginx下进行配置：
+	  location / {
+	  	set $memcached_key = "$uri";	#设置memcached的一个变量
+	  	memcached_pass 127.0.0.1:11211;	#将内容转发到memcached中去访问，如果存在返回信息，不存在请求数据库并获得信息存进memcached中的变量$uri中
+	  }
 
 
 

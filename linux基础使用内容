@@ -142,6 +142,13 @@
 	ifconfig 和 ip addr一样
 55. 服务器时间查看
 	date	沉默格式		查看格式：date +%Y-%m-%d    查看帮助文档：date --help
+56.	centos7没有service iptables save
+	在centos7中防火墙操作：systemctl start|stop|restart|status firewalld
+	在没有service iptables save时候需要进行如下操作：
+	1.systemctl stop firewalld
+	2.yum install -y iptables-services
+	3.systemctl enable firewalld
+	4.systemctl start firewalld
 
 
 
