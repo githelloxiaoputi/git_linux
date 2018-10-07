@@ -167,6 +167,42 @@
 	  	set $memcached_key = "$uri";	#设置memcached的一个变量
 	  	memcached_pass 127.0.0.1:11211;	#将内容转发到memcached中去访问，如果存在返回信息，不存在请求数据库并获得信息存进memcached中的变量$uri中
 	  }
+30.	nginx实现多台服务器调用memcache的缓存机制
+	1.下载安装一个nginx的哈希算法模块	NginxHttpUpstreamConsistentHash		这个算法会自动计算缓存存的到指定服务器和读取指定服务器
+	2.使用upstream定义三台处理memcache的服务器
+		upstream mcserver {
+			consitent_hash $request_uri;
+			server ip:11211;
+			server ip:11212;
+			server ip:11213;
+		}
+	3.location下设置代理
+		location \ {
+			set $memcached_key $request_uri;
+			memcached_pass mcserver;
+			error_page 404 /callback.php
+		}
+	4.在请求的callback.php中连接3台服务器，并设置url值和$request_uri值一致的变量，进行memcache的存取操作就可以了	
+31.	nginx编译新模块：
+	1.nginx -V查看原来编译的模块
+	2.下载需要的模块并解压，获取该模块的文件路径
+	3.进入nginx编译目录，使用./configure --prefix=nginx目录 --add-module=新模块路径 
+	4.make && make install
+32.	Apache下自带压力测试工具bin目录下ab工具
+	如：2000次并发  8000次请求
+	./ab -c 2000 -n 80000 域名/index.html
+33.	编译安装nginx的统计模块便于观察nginx的状态
+	模块名称：--with-http_stub_status_module
+	nginx下的配置：
+	location /status {
+		stub_status on;	开启统计状态
+		access_log off;	关闭产生日志
+		allow 自己的ip;	允许自己的ip查看
+		deny all;	其他人拒绝查看这个状态
+	}
+	浏览器访问：域名/ip/status
+
+
 
 
 
