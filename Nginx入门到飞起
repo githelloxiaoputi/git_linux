@@ -201,6 +201,24 @@
 		deny all;	其他人拒绝查看这个状态
 	}
 	浏览器访问：域名/ip/status
+34.	多并发优化，减少服务器负载，加快浏览速度
+	1.socket优化（nginx方面和系统层面）
+		1.nginx：加大子进程打开的连接数	work_connections 10000 （events里面默认1024）
+		2.系统层面：
+			1.设置最大连接数：设置文件/proc/sys/net/core/somaxconn值	(默认为128,值假如改为50000)
+			2.加大tcp连接的回收：
+				设置文件/proc/sys/net/ipv4/tcp_tw_recycle值（默认为0，值假如改为1）
+			3.空的tcp是否允许回收：
+				设置文件/proc/sys/net/ipv4/tcp_tw_reuse值（默认为0，值假如改为1）
+			4.洪水攻击：不做洪水抵御
+				设置文件/proc/sys/net/ipv4/tcp_syncookies值（默认为1，值假如改为0）
+	2.文件优化（nginx方面和系统方面）
+		1.nginx：子进程允许打开的文件	worker_limit_nofiles 10000(写在events上面) 一个工作进程允许打开的文件数
+		2.系统方面：ulimit -n查看，设置一个比较大的值 ulimit -n 80000
+
+
+
+
 
 
 
