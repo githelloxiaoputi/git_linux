@@ -149,6 +149,14 @@
 	2.yum install -y iptables-services
 	3.systemctl enable firewalld
 	4.systemctl start firewalld
+57.	复制当行并在光标指定行粘贴
+	yy	复制 
+	nyy  复制多行 n代表复制几行	
+	p  粘贴
+	:s/vivian/sky/g   替换当前行所有 vivian 为 sky
+	:%s/vivian/sky/g  替换每一行中所有 vivian 为 sky
+58.	查看linux是多少位数的
+	getconf LONG_BIT
 
 
 

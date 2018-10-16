@@ -33,7 +33,7 @@
 	location / 和 location /foo		匹配 location /foo 匹配越全所以被选择
 	location / 和 location ~ image	匹配 location ~ image 正则优先匹配
 12.	nginx里面的变量(所有变量文件位于：nginx目录下的conf目录下的fastcgi.conf文件中)：
-	$remote_addr 	远程访问的ip
+	$remote_addr 	远程访问的ip 
 	$http_user_agent	访问头文件
 	$document_root	项目目录也就是root后面指定的目录
 	$fastcgi_script_name  项目文件

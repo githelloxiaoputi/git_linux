@@ -1,0 +1,25 @@
+1.	安装java（检查是否已经安装了：java -version）
+	安装步骤：
+	1.yum search java|grep jdk	找到相应的安装包名字 如java-1.8.0-openjdk
+	2.yum install -y java-1.8.0-openjdk
+	3.vi /etc/profile文件配置环境变量，复制下面的就行并正确填写jvm下文件的位置
+	  #set java environment
+	  AVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.161-3.b14.el6_9.x86_64
+	  JRE_HOME=$JAVA_HOME/jre
+	  CLASS_PATH=.:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools:$JRE_HOME/lib
+	  PATH=$PATH:$JAVA_HOME/bin:$JRE_HOME/bin
+	  export JAVA_HOME JRE_HOME CLASS_PATH PATH
+	4.使环境生效
+	  source /etc/profile
+	5.再次使用
+	  java -version
+2.	安装git（检查是否已经安装了：git --version）
+	yum -y install git
+3.	安装jenkins
+	1.配置Jenkins的源（下面的命令是将远程的源配置到/etc/yum.repos.d/中）
+	wget -O /etc/yum.repos.d/jenkins.repo http://jenkins-ci.org/redhat/jenkins.repo
+	2.导入Jenkins的秘钥
+	rpm --import http://pkg.jenkins-ci.org/redhat/jenkins-ci.org.key
+	3.安装Jenkins
+	yum install jenkins
+	4.默认端口是8080 浏览器使用ip+port进行访问，注意防火墙开放端口
