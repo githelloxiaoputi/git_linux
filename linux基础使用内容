@@ -123,7 +123,7 @@
 	每一小时重启nginx
 
 	* 23-7/1 * * * /etc/init.d/nginx restart
-	晚上11点到早上7点之间，每 隔一小时重启nginx
+	晚上11点到早上7点之间，每隔一小时重启nginx
 
 	0 11 4 * mon-wed /etc/init.d/nginx restart
 	每月的4号与每周一到周三 的11点重启nginx
