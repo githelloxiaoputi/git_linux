@@ -157,6 +157,9 @@
 	:%s/vivian/sky/g  替换每一行中所有 vivian 为 sky
 58.	查看linux是多少位数的
 	getconf LONG_BIT
+59.	rz 和 sz命令
+	rz 读取本地文件选择上传到线上服务器
+	sz 文件名  线上服务器发送文件到本地
 
 
 

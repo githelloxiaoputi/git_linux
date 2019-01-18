@@ -1,0 +1,51 @@
+1.安装ipset工具
+	yum -y install ipset
+2.创建ip集合
+	ipset create denyip hash:ip
+3.添加ip到集合中
+	ipset add denyip xx.xx.xx.xx
+4.针对该集合操作防火墙规则  例如：禁止该集合中的ip访问80端口
+	iptables -I INPUT -p tcp --dport 80 -m set --match-set denyip src -j DROP
+5.删除某个集合
+	ipset destroy denyip
+6.删除集合中某个ip
+	ipset del denyip xx.xx.xx.xx
+7.查看集合列表以及详细信息
+
+
+额外：动态获取访问服务器流量ip的个数(对应做修改)：
+netstat -nat|grep ":80"|awk '{print $5}' |awk -F: '{print $1}' | sort| uniq -c |awk '$1>30 && $2!="0.0.0.0" && $2!="36.7.114.85" && $2!="127.0.0.1" && $2!="106.14.24.13"{print $2}' > /data/deny_list && /usr/sbin/iptables -nL --line-number|awk  '$5!="36.7.114.85" && $5!="0.0.0.0/0" && $5!="" && $5!="source"{print $5}' > /data/iptables_list && /usr/bin/bash /data/deny_ip.sh
+
+执行服务器禁用ip脚本，该脚本只对上面的命令获取到的信息起作用：
+
+#!/usr/bin/bash
+
+ipArr=(`cat /data/deny_list`)
+iplen="${#ipArr[@]}"
+
+iptabArr=(`cat /data/iptables_list`)
+iptablen="${#iptabArr[@]}"
+if [ ${iptablen} -eq 0 ]
+then
+  iptabArr=(666666)
+fi
+
+if [ ${iplen} -ne 0 ]
+then
+  for ip_name in `cat /data/deny_list`
+  do
+  bs=0
+    for ip_tab in ${iptabArr[*]}
+    do
+      if [ ${ip_name} == ${ip_tab} ]
+      then
+        bs=1
+        break
+      fi
+    done
+    if [ ${bs} -eq 0 ]
+    then
+      /usr/sbin/ipset add denyip ${ip_name}
+    fi
+  done
+fi

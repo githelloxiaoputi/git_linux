@@ -1,10 +1,12 @@
+linux上安装jenkins
+
 1.	安装java（检查是否已经安装了：java -version）
 	安装步骤：
 	1.yum search java|grep jdk	找到相应的安装包名字 如java-1.8.0-openjdk
 	2.yum install -y java-1.8.0-openjdk
 	3.vi /etc/profile文件配置环境变量，复制下面的就行并正确填写jvm下文件的位置
 	  #set java environment
-	  AVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.161-3.b14.el6_9.x86_64
+	  JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.161-3.b14.el6_9.x86_64
 	  JRE_HOME=$JAVA_HOME/jre
 	  CLASS_PATH=.:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools:$JRE_HOME/lib
 	  PATH=$PATH:$JAVA_HOME/bin:$JRE_HOME/bin
@@ -23,3 +25,18 @@
 	3.安装Jenkins
 	yum install jenkins
 	4.默认端口是8080 浏览器使用ip+port进行访问，注意防火墙开放端口
+
+mac上安装jenkins：
+1.	使用brew安装jenkins
+	brew install jenkins
+2.	设置软链接
+	ln -sfv /usr/local/opt/jenkins/*.plist ~/Library/LaunchAgents
+3.	启动jenkins
+	launchctl load ~/Library/LaunchAgents/homebrew.mxcl.jenkins.plist
+4.	关闭jenkins
+	launchctl unload ~/Library/LaunchAgents/homebrew.mxcl.jenkins.plist
+5.	jenkins初始化入口密码位置：
+	/Users/linbin/.jenkins/secrets/initialAdminPassword
+6.	jenkins设置为中文版本
+	1.安装locale插件
+	2.系统管理->系统设置->Locale中设置zh_CN  并忽略浏览器自带语言设置
