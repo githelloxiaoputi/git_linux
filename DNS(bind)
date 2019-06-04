@@ -1,0 +1,25 @@
+1. bind 是什么？
+	开源，稳定，应用广泛的dns服务
+	组成：域名解析服务     权威域名服务    dns工具
+
+2. dns中的域名
+	www.imooc.com=www.imooc.com. 其中com后面的小数点成为根域，com为一级域名，imooc为二级域名
+
+3. dns解析记录分类
+	1. A记录：域名访问dns服务器后以ip的形式返回
+	2. CNAME：可以把自己的域名解析到其他服务商的域名上并在其他域名上那里以ip的形式返回
+	3. NS记录  4. MX记录：针对邮件服务解析，配合A记录进行
+
+4. 安装BIND
+	yum install bind bind-chroot bind-utils
+
+5. 启动bind的服务
+	service named start     或者     /etc/init.d/named start
+	查看是否启动  ps aux | grep named		使用用户named来启动
+
+6. 配置文件路径
+	bind配置文件路径：/etc/named.conf
+	配置文件项解释：
+		1. options{} - 整个bind使用的全局选项
+		2. logginf{} - 服务日至选项
+		3. zone . {} - DNS域解析

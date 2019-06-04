@@ -101,7 +101,7 @@
 50. 得到自己服务器外部ip
 	curl ifconfig.me
 51. 查看开机自动启动
-	ntsysv
+	ntsysv   
 52. crontab的一些使用案例
 
 	30 21 * * * /etc/init.d/nginx restart
@@ -160,6 +160,8 @@
 59.	rz 和 sz命令
 	rz 读取本地文件选择上传到线上服务器
 	sz 文件名  线上服务器发送文件到本地
+60. rsync -av --exclude="aa/bb/" aa dd
+	同步aa目录到dd目录中去，并排除aa目录下的bb文件夹，排除多个使用多个--exclude
 
 
 

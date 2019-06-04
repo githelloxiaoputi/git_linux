@@ -11,6 +11,7 @@
 6.删除集合中某个ip
 	ipset del denyip xx.xx.xx.xx
 7.查看集合列表以及详细信息
+  ipset list
 
 
 额外：动态获取访问服务器流量ip的个数(对应做修改)：

@@ -1,0 +1,161 @@
+1. docker run nginx
+	运行nginx服务
+
+2. docker run -p 8888:80 -d nginx
+	-p 指定端口  -d 使进程保持交互
+	docker运行nginx服务，并把本地8888端口映射到80端口  使用 localhost:8888可查看效果
+
+3. docker ps
+	查看docker交互正在运行的进程
+
+4. docker stop 进程ID
+	停止交互过程中的进程
+
+5. docker commit -m 'fun' 对应docker容器的ID 仓库名字
+	保存容器的操作，下次重启容器不还原成最初
+	例子：docker commit -m 'fun' 1dab1eed1f3c ngin-fun
+
+6. docker rmi 对应docker容器的ID
+	删除某个容器镜像针对的是  docker images命令下的容器
+
+7. docker pull 		获取image
+   docker build 	创建image
+   docker images 	列出image
+   docker run 		运行container
+   docker ps -a 	列出container
+   docker rm 		删除container
+   docker rmi 		删除image
+   docker cp 		在host和container之间拷贝文件
+   docker commit 	保存改动为新的image
+   docker kill -s HUP container-name  重载容器
+   docker restart container-name  重启容器
+
+8. 创建自己的image镜像，利用编写Dockerfile
+	1. 创建一个目录并在该目录下建立文件Dockerfile
+	2. 编写Dockerfile
+		FROM alpine:latest
+		MAINTAINER xiaoputi
+		CMD echo "hello docker"
+	3. docker build -t 'hello_docker' .   使用build创建镜像并建立一个别名hello_docker
+	4. docker images 查看生成的标签为hello_docker的镜像
+	5. docker run hello_docker
+
+	Dockerfile语法：
+	FROM	base image
+	RUN 	执行命令
+	ADD		添加文件
+	COPY	拷贝文件
+	CMD		执行命令
+	EXPOSE	暴露端口
+	WORKDIR		指定路径
+	MAINTAINER	维护者
+	ENV			设定环境变量
+	ENTRYPOINT	容器入口
+	USER		指定用户
+	VOLUME		mount point
+
+
+9. 删除所有已停止的容器
+	docker rm $(docker ps -a -q)
+
+10. docker进入正在运行的容器
+	docker exec -it 容器id /bin/bash
+
+11. 挂载一个目录并进入docker容器
+	1. docker run -d --name nginx -v /usr/share/nginx/html nginx     进行挂载
+	2. docker inspect nginx	查看挂载，键为mount
+        "Mounts": [
+            {
+                "Type": "volume",
+                "Name": "fc0a75638da277f3338d208e1128dd1d452b55ffaa0aa21abd8406dd21542e94",
+                "Source": "/var/lib/docker/volumes/fc0a75638da277f3338d208e1128dd1d452b55ffaa0aa21abd8406dd21542e94/_data",
+                "Destination": "/usr/share/nginx/html",
+                "Driver": "local",
+                "Mode": "",
+                "RW": true,
+                "Propagation": ""
+            }
+        ],
+    3.
+
+
+进入容器：
+docker run -i -t ubuntu:latest /bin/bash
+-t:在新容器内指定一个伪终端或终端。
+-i:允许你对容器内的标准输入 (STDIN) 进行交互。
+我们可以通过运行exit命令或者使用CTRL+D来退出容器。
+
+
+创建一个以进程方式运行的容器：
+docker run -d ubuntu:latest /bin/sh -c "while true; do echo hello world; sleep 1; done"  运行交互式容器
+docker logs 2b1b7a428627  查看容器日志
+docker stop 2b1b7a428627  停止容器
+docker start 2b1b7a428627  开启容器
+docker rm 2b1b7a428627   移除容器
+
+
+
+运行一个web应用
+docker pull training/webapp  # 载入镜像
+docker run -d -P training/webapp python app.py
+-d:让容器在后台运行
+-P:将容器内部使用的网络端口映射到我们使用的主机上。
+docker ps 来查看我们正在运行的容器,并发现一个新的端口，0.0.0.0:32769->5000/tcp，主机32769端口映射到了docker中的5000端口
+通过浏览器访问：127.0.0.1:32769
+我们也可以通过 -p 参数来设置不一样的端口：
+docker run -d -p 5000:5000 training/webapp python app.py
+容器内部的 5000 端口映射到我们本地主机的 5000 端口上
+使用 docker port 可以查看指定 （ID 或者名字）容器的某个确定端口映射到宿主机的端口号。docker port bf08b7f2cd89
+docker logs -f bf08b7f2cd89
+-f: 让 docker logs 像使用 tail -f 一样来输出容器内部的标准输出。
+我们还可以使用 docker top 来查看容器内部运行的进程
+docker top f7866b9fdd29
+使用 docker inspect 来查看 Docker 的底层信息。它会返回一个 JSON 文件记录着 Docker 容器的配置和状态信息
+docker inspect f7866b9fdd29
+
+
+
+我们可以通过 docker search 命令搜索寻找适合我们的镜像
+docker search httpd 找到镜像后使用 docker pull httpd
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

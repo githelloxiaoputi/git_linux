@@ -1,0 +1,23 @@
+1、 创建属于自己的screen 窗口
+	screen -S yourname
+	会进入到一个叫yourname的会话中，在这个会话里你可以创建其他的回话窗口：
+
+	crtl + a， c， 创建新的会话窗口，编号递增 
+	crtl + a， n，进入下一个会话窗口 
+	crtl + a， p， 进入上一个会话窗口
+
+	需要删除掉某个会话窗口，输入命令：
+	exit
+
+	从yourname这个会话里跳出去回到最开始命令界面：
+	crtl + a, d
+
+2、 查看screen列表和恢复会话
+	screen -list
+
+	显示为Detached的是可以恢复的对话，attached是已经连接的会话：
+	screen -r cnn 
+	这句可以恢复叫cnn的会话
+
+	如何进入到处于attached状态的会话呢？？
+	screen -d -r cnn
